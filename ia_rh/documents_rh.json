@@ -1,0 +1,22 @@
+[
+          {
+            "title": "Politique des congés",
+            "category": "conges",
+            "content": "Chaque collaborateur dispose de 25 jours ouvrés de congés payés par an. La demande de congé doit être effectuée via la plateforme RH et validée par le manager."
+          },
+          {
+            "title": "Procédure absence",
+            "category": "absence",
+            "content": "En cas d'absence, le collaborateur doit prévenir son manager dès que possible et transmettre un justificatif si nécessaire."
+          },
+          {
+            "title": "Demande d'attestation de travail",
+            "category": "document_rh",
+            "content": "Une attestation de travail peut être demandée depuis l'espace collaborateur. Elle est ensuite générée automatiquement puis validée par le service RH."
+          },
+          {
+            "title": "Procédure paie",
+            "category": "paie",
+            "content": "Les bulletins de paie sont disponibles dans l'espace personnel sécurisé. Les informations de paie sont confidentielles et accessibles uniquement à l'utilisateur concerné et aux profils RH autorisés."
+          }
+        ]

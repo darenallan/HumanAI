@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HumanAI - Unified Backend Test Bench</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #090b11;
+      --bg-card: #131622;
+      --bg-input: #07090e;
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --secondary: #06b6d4;
+      --secondary-hover: #0891b2;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.06);
+      --font-main: 'Outfit', sans-serif;
+      --font-code: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text) 30%, var(--primary) 70%, var(--secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      align-self: center;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      font-family: var(--font-main);
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      color: white;
+      background: var(--primary);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    /* Global settings card */
+    .settings-bar {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 1.5rem auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .settings-bar {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-content {
+      display: none;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+      width: 100%;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: grid;
+    }
+
+    @media (max-width: 900px) {
+      .tab-content.active {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+    }
+
+    .card-title span {
+      background: linear-gradient(135deg, #fff, var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select, textarea {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    button {
+      font-family: var(--font-main);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #059669;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-danger {
+      background-color: var(--error);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-badge.disconnected {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .status-badge.connected {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .user-info {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      word-break: break-all;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    /* Response Console Visualizer */
+    .console-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      height: 100%;
+    }
+
+    .visualizer {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      flex-grow: 1;
+      overflow-y: auto;
+      height: 380px;
+      max-height: 550px;
+      color: #38bdf8;
+      white-space: pre-wrap;
+    }
+
+    .visualizer.error-response {
+      color: #f87171;
+    }
+
+    .visualizer.success-response {
+      color: #34d399;
+    }
+
+    .visualizer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+    }
+
+    /* Chat Area specialized styling */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 320px;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-y: auto;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .chat-bubble {
+      padding: 0.6rem 0.9rem;
+      border-radius: 12px;
+      max-width: 80%;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .chat-bubble.user {
+      background-color: rgba(139, 92, 246, 0.15);
+      color: #e9d5ff;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .chat-bubble.assistant {
+      background-color: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .chat-bubble.blocked {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .sources-list {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-top: 0.25rem;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transform: translateY(150%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      font-size: 0.9rem;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+    }
+
+    #toast.toast-success {
+      border-left: 4px solid var(--success);
+    }
+
+    #toast.toast-error {
+      border-left: 4px solid var(--error);
+    }
+
+    .toast-icon {
+      font-size: 1.1rem;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>HumanAI - Console de Test Unifiée</h1>
+    <p>Testez l'intégralité du backend FastAPI : Auth, Assistant RAG, Génération de PDF, Workflows RH, Analytics et Supervision.</p>
+  </header>
+
+  <!-- PARAMÈTRES GLOBAUX DU COMPAGNION DE TEST -->
+  <div class="settings-bar">
+    <div class="form-group">
+      <label>URL de l'API Backend</label>
+      <input type="text" id="api-base-url" value="http://localhost:8000" placeholder="http://localhost:8000">
+    </div>
+    <div class="form-group">
+      <label>Mode d'en-tête d'authentification</label>
+      <select id="auth-header-mode">
+        <option value="firebase">Attacher le jeton Firebase ID courant</option>
+        <option value="mock-admin">Jeton Mock Admin (mock-token-admin)</option>
+        <option value="mock-collaborateur">Jeton Mock Collaborateur (mock-token-collaborateur)</option>
+        <option value="none">Aucun (Anonyme)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Statut Firebase</label>
+      <div id="auth-status-badge" class="status-badge disconnected" style="justify-content: center; height: 38px;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background-color: currentColor; display: inline-block;"></span>
+        <span id="auth-status-text">Déconnecté</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAvigation par Onglet -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('auth')">🔑 Authentification</button>
+    <button class="tab-btn" onclick="switchTab('rag')">🤖 RAG & Chat IA</button>
+    <button class="tab-btn" onclick="switchTab('docs')">📄 Documents</button>
+    <button class="tab-btn" onclick="switchTab('workflows')">⚙️ Workflows RH</button>
+    <button class="tab-btn" onclick="switchTab('analytics')">📊 Analytics & Risques</button>
+    <button class="tab-btn" onclick="switchTab('admin')">🛡️ Supervision</button>
+  </div>
+
+  <div class="container">
+    
+    <!-- ── TAB 1: AUTHENTICATION ────────────────────────────────────────────── -->
+    <div id="tab-auth" class="tab-content active">
+      <div class="card">
+        <div class="card-title">
+          <span>Client Firebase Authentication</span>
+        </div>
+        
+        <div class="form-group">
+          <label>Identifiants de Connexion</label>
+          <input type="email" id="auth-email" placeholder="email@exemple.com" value="testuser@example.com">
+        </div>
+        <div class="form-group">
+          <input type="password" id="auth-password" placeholder="Mot de passe" value="SecurePassword123!">
+        </div>
+
+        <div class="btn-row">
+          <button id="btn-login" class="btn-primary">Se Connecter</button>
+          <button id="btn-register" class="btn-secondary">S'Enregistrer</button>
+        </div>
+
+        <button id="btn-logout" class="btn-danger" style="display: none;">Se Déconnecter</button>
+
+        <div class="form-group" id="user-details-group" style="display: none;">
+          <label>Profil utilisateur Firebase</label>
+          <div class="user-info" id="user-info-box"></div>
+        </div>
+
+        <div class="token-container" id="token-group" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+            <label>Firebase ID Token</label>
+            <button id="btn-copy-token" class="btn-secondary" style="padding: 0.2rem 0.4rem; font-size: 0.75rem;">Copier</button>
+          </div>
+          <div class="user-info" id="token-box" style="height: 80px; color: var(--secondary)"></div>
+        </div>
+      </div>
+
+      <div class="console-wrapper">
+        <div class="card" style="height: 100%;">
+          <div class="card-title"><span>Validation Profil Local (FastAPI /me)</span></div>
+          <button id="btn-check-me" class="btn-primary" style="background-color: var(--secondary)">
+            Vérifier Profil (/auth/me)
+          </button>
+          <div class="visualizer-header">
+            <span id="auth-resp-status">Status: -</span>
+          </div>
+          <div class="visualizer" id="auth-console">Les réponses de l'API /auth/me s'afficheront ici.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 2: RAG & CHAT IA ─────────────────────────────────────────────── -->
+    <div id="tab-rag" class="tab-content">
+      <div class="card">
+        <div class="card-title"><span>Ingestion de Document Source</span></div>
+        <div class="form-group">
+          <label>Titre du Document</label>
+          <input type="text" id="ingest-title" placeholder="ex: Règlement Intérieur 2026">
+        </div>
+        <div class="form-group">
+          <label>Fichier source (PDF, TXT, DOCX)</label>
+          <input type="file" id="ingest-file" accept=".pdf,.docx,.doc,.txt,.md">
+        </div>
+        <div class="form-group">
+          <label>Rôles autorisés (séparés par des virgules)</label>
+          <input type="text" id="ingest-roles" value="collaborateur,manager,rh,direction,admin">
+        </div>
+        <button id="btn-ingest" class="btn-primary">Ingérer le document</button>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+          <label style="margin-bottom: 0.5rem; display: block;">Session de Chat active</label>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" id="chat-session-id" placeholder="UUID Session auto-généré">
+            </div>
+            <button id="btn-new-session" class="btn-secondary" style="height: 38px;">Nouvelle Session</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="console-wrapper">
+        <div class="card" style="height: 100%;">
+          <div class="card-title"><span>Assistant RH Intelligent (RAG)</span></div>
+          
+          <div class="chat-container" id="chat-container">
+            <div class="chat-bubble assistant">
+              Bonjour ! Posez-moi des questions sur les conventions collectives, le règlement ou les politiques RH de l'entreprise.
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="chat-message" placeholder="Votre message ou question..." style="flex-grow: 1;">
+            <button id="btn-send-chat" class="btn-primary" style="background-color: var(--secondary)">Poser</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 3: DOCUMENTS ────────────────────────────────────────────────── -->
+    <div id="tab-docs" class="tab-content">
+      <div class="card">
+        <div class="card-title"><span>Générer un document RH</span></div>
+        <div class="form-group">
+          <label>ID Template (UUID)</label>
+          <input type="text" id="doc-template-id" placeholder="Ex: 550e8400-e29b-41d4-a716-446655440000">
+        </div>
+        <div class="form-group">
+          <label>ID Employé (UUID)</label>
+          <input type="text" id="doc-employee-id" placeholder="Ex: UUID de l'employé ciblé">
+        </div>
+        <button id="btn-generate-doc" class="btn-primary">Générer le Document (Draft)</button>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1.25rem;" class="form-group">
+          <label>Télécharger & Déchiffrer (AES-256)</label>
+          <input type="text" id="download-doc-id" placeholder="ID du document généré (UUID)">
+          <button id="btn-download-doc" class="btn-success" style="margin-top: 0.5rem;">
+            Déchiffrer et Télécharger PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="console-wrapper">
+        <div class="card" style="height: 100%;">
+          <div class="card-title"><span>Console Documents</span></div>
+          <div class="visualizer-header">
+            <span id="docs-resp-status">Status: -</span>
+          </div>
+          <div class="visualizer" id="docs-console">Les réponses JSON s'afficheront ici.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 4: WORKFLOWS ────────────────────────────────────────────────── -->
+    <div id="tab-workflows" class="tab-content">
+      <div class="card">
+        <div class="card-title"><span>Onboarding (Intégration)</span></div>
+        <div class="form-group">
+          <label>ID Employé à intégrer</label>
+          <input type="text" id="onboard-employee-id" placeholder="UUID de l'employé">
+        </div>
+        <div class="btn-row">
+          <button id="btn-create-onboarding" class="btn-primary">Générer Plan 30j</button>
+          <button id="btn-cron-onboarding" class="btn-secondary" style="font-size: 0.8rem;">Détecter Retards (CRON)</button>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1.25rem;">
+          <div class="card-title" style="border: none; padding: 0; font-size: 1.1rem; margin-bottom: 0.75rem;">
+            <span>Offboarding (Sortie)</span>
+          </div>
+          <div class="form-group">
+            <label>ID Employé sortant</label>
+            <input type="text" id="offboard-employee-id" placeholder="UUID de l'employé">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Raison du départ</label>
+              <select id="offboard-reason">
+                <option value="demission">Démission</option>
+                <option value="licenciement">Licenciement</option>
+                <option value="fin_contrat">Fin de contrat</option>
+                <option value="retraite">Retraite</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date effective</label>
+              <input type="date" id="offboard-date">
+            </div>
+          </div>
+          <button id="btn-create-offboarding" class="btn-danger" style="width: 100%; margin-top: 0.75rem;">
+            Initier l'Offboarding
+          </button>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+          <label>Valider une étape d'Offboarding</label>
+          <div class="form-row" style="margin-top: 0.25rem;">
+            <input type="text" id="offboard-step-id" placeholder="UUID de l'étape">
+            <input type="text" id="offboard-step-notes" placeholder="Notes (ex: matériel rendu)">
+          </div>
+          <button id="btn-complete-offboard-step" class="btn-success" style="width: 100%; margin-top: 0.5rem;">
+            Marquer l'étape comme Complétée
+          </button>
+        </div>
+      </div>
+
+      <div class="console-wrapper">
+        <div class="card" style="height: 100%;">
+          <div class="card-title"><span>Console Workflows Agentiques</span></div>
+          <div class="visualizer-header">
+            <span id="workflows-resp-status">Status: -</span>
+          </div>
+          <div class="visualizer" id="workflows-console">Les réponses JSON s'afficheront ici.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 5: ANALYTICS ────────────────────────────────────────────────── -->
+    <div id="tab-analytics" class="tab-content">
+      <div class="card">
+        <div class="card-title"><span>Calcul des Indicateurs (KPIs)</span></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Année</label>
+            <input type="number" id="kpi-year" value="2026">
+          </div>
+          <div class="form-group">
+            <label>Mois</label>
+            <input type="number" id="kpi-month" value="6" min="1" max="12">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button id="btn-compute-kpi" class="btn-primary">Calculer KPIs</button>
+          <button id="btn-get-kpis" class="btn-secondary">Historique (Redis)</button>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1.25rem;">
+          <div class="card-title" style="border: none; padding: 0; font-size: 1.1rem; margin-bottom: 0.75rem;">
+            <span>Prédiction du Désengagement</span>
+          </div>
+          <div class="form-group">
+            <label>ID Employé à évaluer</label>
+            <input type="text" id="disengagement-employee-id" placeholder="UUID de l'employé">
+          </div>
+          <div class="btn-row" style="margin-top: 0.5rem;">
+            <button id="btn-scoring-single" class="btn-primary" style="background-color: var(--secondary)">Calculer le risque</button>
+            <button id="btn-scoring-mass" class="btn-secondary">Scoring de masse</button>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+          <button id="btn-get-alerts" class="btn-danger" style="width: 100%;">
+            Récupérer les Alertes RH actives
+          </button>
+        </div>
+      </div>
+
+      <div class="console-wrapper">
+        <div class="card" style="height: 100%;">
+          <div class="card-title"><span>Console Analytics</span></div>
+          <div class="visualizer-header">
+            <span id="analytics-resp-status">Status: -</span>
+          </div>
+          <div class="visualizer" id="analytics-console">Les réponses JSON s'afficheront ici.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 6: SUPERVISION & ADMIN ──────────────────────────────────────── -->
+    <div id="tab-admin" class="tab-content">
+      <div class="card">
+        <div class="card-title"><span>Administration & Supervision</span></div>
+        <label style="margin-bottom: 0.5rem;">Consultation des logs d'activité</label>
+        <div class="btn-row">
+          <button id="btn-get-audit" class="btn-primary">Logs d'Audit</button>
+          <button id="btn-get-interactions" class="btn-secondary">Interactions IA</button>
+        </div>
+        
+        <div style="border-top: 1px solid var(--border); padding-top: 1.25rem;" class="form-group">
+          <label>Sécurité & Guardrails IA</label>
+          <button id="btn-get-sec-events" class="btn-danger">Événements de Sécurité IA</button>
+          
+          <div style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 0.75rem;">
+            <label>Accuser réception d'une alerte IA</label>
+            <div class="form-row" style="margin-top: 0.25rem;">
+              <input type="text" id="admin-event-id" placeholder="UUID de l'événement de sécurité">
+              <button id="btn-notify-event" class="btn-success" style="height: 38px;">Valider</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="console-wrapper">
+        <div class="card" style="height: 100%;">
+          <div class="card-title"><span>Console Supervision de Sécurité</span></div>
+          <div class="visualizer-header">
+            <span id="admin-resp-status">Status: -</span>
+          </div>
+          <div class="visualizer" id="admin-console">Les logs de supervision administrative s'afficheront ici.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast">
+    <span class="toast-icon" id="toast-icon">✔</span>
+    <span id="toast-message">Notification</span>
+  </div>
+
+  <!-- Firebase JavaScript SDK v10 (ES Modules via CDN) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Configuration Firebase conservée à l'identique pour correspondre au projet
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYi0aTwjk8Qqu1n-zDgDWm6ullrKP2IeA",
+      authDomain: "humanai-c7725.firebaseapp.com",
+      projectId: "humanai-c7725",
+      storageBucket: "humanai-c7725.firebasestorage.app",
+      messagingSenderId: "889131972369",
+      appId: "1:889131972369:web:ef12e70c8ca79acf583eb0",
+      measurementId: "G-34WY8TDCLG"
+    };
+
+    // Initialisation Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    let currentIdToken = null;
+    let currentUser = null;
+
+    // Toast helper
+    window.showToast = function(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+      
+      toast.className = ''; 
+      toast.classList.add(type === 'success' ? 'toast-success' : 'toast-error');
+      
+      toastMsg.innerText = message;
+      toastIcon.innerText = type === 'success' ? '✔' : '✖';
+      
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    // Gestion de l'état d'authentification Firebase
+    onAuthStateChanged(auth, async (user) => {
+      const badge = document.getElementById('auth-status-badge');
+      const statusText = document.getElementById('auth-status-text');
+      const userInfoBox = document.getElementById('user-info-box');
+      const userGroup = document.getElementById('user-details-group');
+      const tokenGroup = document.getElementById('token-group');
+      const tokenBox = document.getElementById('token-box');
+      const btnLogout = document.getElementById('btn-logout');
+      const btnLogin = document.getElementById('btn-login');
+      const btnRegister = document.getElementById('btn-register');
+
+      if (user) {
+        currentUser = user;
+        currentIdToken = await user.getIdToken();
+
+        badge.className = 'status-badge connected';
+        statusText.innerText = 'Connecté';
+        
+        const info = {
+          uid: user.uid,
+          email: user.email,
+          emailVerified: user.emailVerified,
+          metadata: user.metadata
+        };
+        
+        userInfoBox.innerText = JSON.stringify(info, null, 2);
+        tokenBox.innerText = currentIdToken;
+
+        userGroup.style.display = 'flex';
+        tokenGroup.style.display = 'flex';
+        btnLogout.style.display = 'block';
+        btnLogin.style.display = 'none';
+        btnRegister.style.display = 'none';
+
+        window.showToast("Firebase connecté.");
+      } else {
+        currentUser = null;
+        currentIdToken = null;
+
+        badge.className = 'status-badge disconnected';
+        statusText.innerText = 'Déconnecté';
+        
+        userInfoBox.innerText = '';
+        tokenBox.innerText = '';
+
+        userGroup.style.display = 'none';
+        tokenGroup.style.display = 'none';
+        btnLogout.style.display = 'none';
+        btnLogin.style.display = 'block';
+        btnRegister.style.display = 'block';
+      }
+    });
+
+    // Inscription / Connexion / Déconnexion
+    document.getElementById('btn-register').addEventListener('click', async () => {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        window.showToast("Compte Firebase créé !");
+      } catch (error) {
+        window.showToast(error.message, "error");
+      }
+    });
+
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.showToast("Connecté avec succès.");
+      } catch (error) {
+        window.showToast(error.message, "error");
+      }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.showToast("Déconnecté.");
+      } catch (error) {
+        window.showToast("Erreur de déconnexion", "error");
+      }
+    });
+
+    document.getElementById('btn-copy-token').addEventListener('click', () => {
+      if (currentIdToken) {
+        navigator.clipboard.writeText(currentIdToken);
+        window.showToast("Copié !");
+      } else {
+        window.showToast("Aucun jeton", "error");
+      }
+    });
+
+    // Navigation des onglets
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabName));
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      const activeContent = document.getElementById(`tab-${tabName}`);
+      if (activeContent) activeContent.classList.add('active');
+    };
+
+    // Helper d'appel API
+    async function callAPI(endpoint, method = 'GET', body = null, consoleId, isIngest = false) {
+      const apiBase = document.getElementById('api-base-url').value.trim();
+      const headerMode = document.getElementById('auth-header-mode').value;
+      const consoleBox = document.getElementById(consoleId);
+      const statusBox = consoleBox.previousElementSibling.firstElementChild;
+
+      consoleBox.innerText = "Appel API en cours...";
+      consoleBox.className = "visualizer";
+
+      let headers = {};
+      if (!isIngest) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      if (headerMode === 'firebase') {
+        if (!currentIdToken) {
+          window.showToast("Jeton Firebase manquant", "error");
+          consoleBox.innerText = "Erreur : vous devez d'abord vous connecter.";
+          consoleBox.classList.add("error-response");
+          return;
+        }
+        headers["Authorization"] = `Bearer ${currentIdToken}`;
+      } else if (headerMode === 'mock-admin') {
+        headers["Authorization"] = "Bearer mock-token-admin";
+      } else if (headerMode === 'mock-collaborateur') {
+        headers["Authorization"] = "Bearer mock-token-collaborateur";
+      }
+
+      const url = `${apiBase}${endpoint}`;
+      try {
+        const fetchOptions = { method, headers };
+        if (body) {
+          fetchOptions.body = isIngest ? body : JSON.stringify(body);
+        }
+
+        const response = await fetch(url, fetchOptions);
+        
+        statusBox.innerText = `Status: ${response.status} ${response.statusText}`;
+
+        if (response.status === 204) {
+          consoleBox.classList.add("success-response");
+          consoleBox.innerText = "204 No Content (Action effectuée avec succès)";
+          return null;
+        }
+
+        // Si c'est un PDF (download)
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/pdf")) {
+          const blob = await response.blob();
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = downloadUrl;
+          a.download = `document_${Date.now()}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          consoleBox.classList.add("success-response");
+          consoleBox.innerText = "PDF téléchargé avec succès.";
+          return null;
+        }
+
+        const data = await response.json();
+        if (response.ok) {
+          consoleBox.classList.add("success-response");
+        } else {
+          consoleBox.classList.add("error-response");
+        }
+        consoleBox.innerText = JSON.stringify(data, null, 2);
+        return data;
+      } catch (error) {
+        consoleBox.classList.add("error-response");
+        consoleBox.innerText = `Échec de l'appel : ${error.message}`;
+        statusBox.innerText = "Status: Connection Failed";
+        return null;
+      }
+    }
+
+    // Onglet 1: Auth/Profil Validation
+    document.getElementById('btn-check-me').addEventListener('click', () => {
+      callAPI('/auth/me', 'GET', null, 'auth-console');
+    });
+
+    // Onglet 2: RAG / Chat & Ingestion
+    // Init session active
+    document.getElementById('chat-session-id').value = crypto.randomUUID();
+    document.getElementById('btn-new-session').addEventListener('click', () => {
+      document.getElementById('chat-session-id').value = crypto.randomUUID();
+      window.showToast("Nouvelle session de chat initialisée.");
+    });
+
+    document.getElementById('btn-ingest').addEventListener('click', async () => {
+      const fileInput = document.getElementById('ingest-file');
+      const title = document.getElementById('ingest-title').value.trim();
+      const roles = document.getElementById('ingest-roles').value.trim();
+
+      if (!fileInput.files[0] || !title) {
+        window.showToast("Fichier et titre obligatoires.", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("title", title);
+      formData.append("allowed_roles", roles);
+
+      const consoleBox = document.getElementById('chat-container');
+      consoleBox.innerHTML += `<div class="chat-bubble assistant"><i>Ingestion du document "${title}" en cours...</i></div>`;
+      
+      const apiBase = document.getElementById('api-base-url').value.trim();
+      const headerMode = document.getElementById('auth-header-mode').value;
+      
+      let headers = {};
+      if (headerMode === 'firebase') {
+        headers["Authorization"] = `Bearer ${currentIdToken}`;
+      } else if (headerMode === 'mock-admin') {
+        headers["Authorization"] = "Bearer mock-token-admin";
+      } else if (headerMode === 'mock-collaborateur') {
+        headers["Authorization"] = "Bearer mock-token-collaborateur";
+      }
+
+      try {
+        const response = await fetch(`${apiBase}/rag/documents/ingest`, {
+          method: 'POST',
+          headers: headers,
+          body: formData
+        });
+        const data = await response.json();
+        if (response.ok) {
+          consoleBox.innerHTML += `<div class="chat-bubble assistant" style="color: var(--success)">✔ Document "${title}" ingéré et découpé en chunks avec succès !</div>`;
+          window.showToast("Document ingéré.");
+        } else {
+          consoleBox.innerHTML += `<div class="chat-bubble blocked">✖ Ingestion échouée : ${data.detail || JSON.stringify(data)}</div>`;
+        }
+      } catch (err) {
+        consoleBox.innerHTML += `<div class="chat-bubble blocked">✖ Erreur de connexion : ${err.message}</div>`;
+      }
+      consoleBox.scrollTop = consoleBox.scrollHeight;
+    });
+
+    document.getElementById('btn-send-chat').addEventListener('click', async () => {
+      const message = document.getElementById('chat-message').value.trim();
+      const sessionId = document.getElementById('chat-session-id').value;
+      const chatContainer = document.getElementById('chat-container');
+
+      if (!message) return;
+
+      chatContainer.innerHTML += `<div class="chat-bubble user">${message}</div>`;
+      document.getElementById('chat-message').value = '';
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      const apiBase = document.getElementById('api-base-url').value.trim();
+      const headerMode = document.getElementById('auth-header-mode').value;
+      
+      let headers = { "Content-Type": "application/json" };
+      if (headerMode === 'firebase') {
+        headers["Authorization"] = `Bearer ${currentIdToken}`;
+      } else if (headerMode === 'mock-admin') {
+        headers["Authorization"] = "Bearer mock-token-admin";
+      } else if (headerMode === 'mock-collaborateur') {
+        headers["Authorization"] = "Bearer mock-token-collaborateur";
+      }
+
+      try {
+        const response = await fetch(`${apiBase}/rag/chat`, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ message: message, session_id: sessionId })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          let sourcesHtml = '';
+          if (data.sources && data.sources.length > 0) {
+            sourcesHtml = `<div class="sources-list">📚 Sources : ${data.sources.join(', ')}</div>`;
+          }
+          chatContainer.innerHTML += `<div class="chat-bubble assistant">${data.response}${sourcesHtml}</div>`;
+        } else {
+          const detail = data.detail || "Requête refusée / bloquée par les Guardrails.";
+          chatContainer.innerHTML += `<div class="chat-bubble blocked">🛡️ <b>Alerte Sécurité :</b> ${detail}</div>`;
+        }
+      } catch (err) {
+        chatContainer.innerHTML += `<div class="chat-bubble blocked">✖ Impossible de joindre le serveur RAG (${err.message})</div>`;
+      }
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
+
+    // Onglet 3: Documents
+    document.getElementById('btn-generate-doc').addEventListener('click', () => {
+      const templateId = document.getElementById('doc-template-id').value.trim();
+      const employeeId = document.getElementById('doc-employee-id').value.trim();
+      if (!templateId || !employeeId) {
+        window.showToast("Template ID et Employee ID requis.", "error");
+        return;
+      }
+      callAPI('/documents/generate', 'POST', { template_id: templateId, employee_id: employeeId }, 'docs-console');
+    });
+
+    document.getElementById('btn-download-doc').addEventListener('click', () => {
+      const docId = document.getElementById('download-doc-id').value.trim();
+      if (!docId) {
+        window.showToast("ID du document requis.", "error");
+        return;
+      }
+      callAPI(`/documents/${docId}/download`, 'GET', null, 'docs-console');
+    });
+
+    // Onglet 4: Workflows On/Offboarding
+    document.getElementById('btn-create-onboarding').addEventListener('click', () => {
+      const empId = document.getElementById('onboard-employee-id').value.trim();
+      if (!empId) {
+        window.showToast("ID Employé requis.", "error");
+        return;
+      }
+      callAPI('/workflows/onboarding', 'POST', { employee_id: empId }, 'workflows-console');
+    });
+
+    document.getElementById('btn-cron-onboarding').addEventListener('click', () => {
+      callAPI('/workflows/onboarding/check-delays', 'POST', null, 'workflows-console');
+    });
+
+    document.getElementById('btn-create-offboarding').addEventListener('click', () => {
+      const empId = document.getElementById('offboard-employee-id').value.trim();
+      const reason = document.getElementById('offboard-reason').value;
+      const depDate = document.getElementById('offboard-date').value;
+      if (!empId || !depDate) {
+        window.showToast("ID Employé et date requis.", "error");
+        return;
+      }
+      callAPI('/workflows/offboarding', 'POST', { 
+        employee_id: empId, 
+        departure_reason: reason, 
+        departure_date: depDate 
+      }, 'workflows-console');
+    });
+
+    document.getElementById('btn-complete-offboard-step').addEventListener('click', () => {
+      const stepId = document.getElementById('offboard-step-id').value.trim();
+      const notes = document.getElementById('offboard-step-notes').value.trim();
+      if (!stepId) {
+        window.showToast("ID de l'étape requis.", "error");
+        return;
+      }
+      callAPI(`/workflows/offboarding/steps/${stepId}`, 'PUT', { notes: notes }, 'workflows-console');
+    });
+
+    // Onglet 5: Analytics
+    document.getElementById('btn-compute-kpi').addEventListener('click', () => {
+      const year = parseInt(document.getElementById('kpi-year').value);
+      const month = parseInt(document.getElementById('kpi-month').value);
+      callAPI(`/analytics/kpis?year=${year}&month=${month}`, 'POST', null, 'analytics-console');
+    });
+
+    document.getElementById('btn-get-kpis').addEventListener('click', () => {
+      callAPI('/analytics/kpis', 'GET', null, 'analytics-console');
+    });
+
+    document.getElementById('btn-scoring-single').addEventListener('click', () => {
+      const empId = document.getElementById('disengagement-employee-id').value.trim();
+      if (!empId) {
+        window.showToast("ID Employé requis.", "error");
+        return;
+      }
+      callAPI(`/analytics/disengagement/${empId}`, 'POST', null, 'analytics-console');
+    });
+
+    document.getElementById('btn-scoring-mass').addEventListener('click', () => {
+      callAPI('/analytics/disengagement/mass-scoring/', 'POST', null, 'analytics-console');
+    });
+
+    document.getElementById('btn-get-alerts').addEventListener('click', () => {
+      callAPI('/analytics/alerts', 'GET', null, 'analytics-console');
+    });
+
+    // Onglet 6: Admin/Supervision
+    document.getElementById('btn-get-audit').addEventListener('click', () => {
+      callAPI('/admin/audit-logs', 'GET', null, 'admin-console');
+    });
+
+    document.getElementById('btn-get-interactions').addEventListener('click', () => {
+      callAPI('/admin/interactions', 'GET', null, 'admin-console');
+    });
+
+    document.getElementById('btn-get-sec-events').addEventListener('click', () => {
+      callAPI('/admin/security-events', 'GET', null, 'admin-console');
+    });
+
+    document.getElementById('btn-notify-event').addEventListener('click', () => {
+      const eventId = document.getElementById('admin-event-id').value.trim();
+      if (!eventId) {
+        window.showToast("ID d'événement requis.", "error");
+        return;
+      }
+      callAPI(`/admin/security-events/${eventId}/notify`, 'POST', null, 'admin-console');
+    });
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+[
+          {
+            "user_id": 1,
+            "first_name": "Marc",
+            "last_name": "NATAKWE",
+            "gender": "M",
+            "position": "Apprenant développeur IA",
+            "department": "Innovation RH",
+            "start_date": "2025-10-01",
+            "contract_type": "Stage / Projet académique"
+          },
+          {
+            "user_id": 2,
+            "first_name": "Sarah",
+            "last_name": "Dupont",
+            "gender": "F",
+            "position": "Chargée RH",
+            "department": "Ressources Humaines",
+            "start_date": "2024-03-15",
+            "contract_type": "CDI"
+          }
+        ]

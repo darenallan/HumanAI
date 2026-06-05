@@ -1,0 +1,43 @@
+Backend/
+├── app/
+│   ├── main.py                 # Point d'entrée FastAPI
+│   ├── config/
+│   │   └── config.py           # Configuration (Pydantic Settings + .env)
+│   ├── core/
+│   │   ├── security.py         # Hachage, JWT et dépendances RBAC
+│   │   └── database.py         # Connexion PostgreSQL / Session SQL
+│   ├── models/                 # Dossier de modèles modulaires
+│   │   ├── __init__.py
+│   │   ├── users.py            # Modèles Collaborateurs / Admin
+│   │   ├── documents.py        # Modèles Attestations / Contrats
+│   │   ├── workflows.py        # Modèles Onboarding / Offboarding
+│   │   └── logs.py             # Modèles Logs d'interaction et Alertes Cyber
+│   ├── schemas/                # Dossier de schémas Pydantic (Requêtes/Réponses)
+│   │   ├── __init__.py
+│   │   ├── users.py
+│   │   ├── documents.py
+│   │   ├── workflows.py
+│   │   └── logs.py
+│   ├── services/
+│   │   ├── rag.py              # Orchestrateur RAG & filtre de sensibilité
+│   │   ├── document.py         # Moteur de génération automatique de documents RH
+│   │   ├── onboarding.py       # Parcours d'intégration
+│   │   ├── offboarding.py      # Processus de sortie et transfert de connaissances
+│   │   ├── analytics.py        # Calculs d'indicateurs RH (Masse salariale, Absentéisme)
+│   │   ├── disengagement.py    # Détection des signaux faibles (Burnout/Désengagement)
+│   │   └── security_monitor.py # Analyseur de logs IA, Guardrails et alertes admin
+│   └── api/
+│       └── v1/
+│           ├── auth.py         # Authentification et profils
+│           ├── rag.py          # Chatbot conversationnel IA
+│           ├── documents.py    # Requêtes de génération documentaire
+│           ├── onboarding.py   # Actions d'onboarding
+│           ├── offboarding.py  # Actions d'offboarding (Séparé pour le Front)
+│           ├── analytics.py    # Dashboards et prédictions
+│           └── admin.py        # Supervision sécurité (Logs et alertes)
+├── scripts/
+│   └── populate_rag.py         # Script pour parser et vectoriser les documents RH initiaux
+├── .env.example                # Exemple de variables de configuration
+├── requirements.txt            # Dépendances du projet
+└── tests/
+    └── test_main.py            # Tests d'intégration
