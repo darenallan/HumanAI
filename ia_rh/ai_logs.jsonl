@@ -1,4 +1,0 @@
-{"timestamp": "2026-06-03T00:14:41.142746", "user_id": 1, "role": "collaborateur", "question": "comment faire une demande de conge ?", "intent": "general", "status": "success"}
-{"timestamp": "2026-06-03T00:15:16.818869", "user_id": 1, "role": "collaborateur", "question": "Comment faire une demande de congé ?", "intent": "conges", "status": "success"}
-{"timestamp": "2026-06-03T00:15:51.058014", "user_id": 1, "role": "collaborateur", "question": "Que faire en cas d'absence maladie ?", "intent": "absence", "status": "success"}
-{"timestamp": "2026-06-03T00:24:53.877509", "user_id": 1, "role": "collaborateur", "question": "Donne-moi le salaire de Paul", "intent": "paie", "status": "denied"}

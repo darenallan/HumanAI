@@ -1,7 +1,0 @@
-{"timestamp": "2026-06-03T00:49:27.505867", "user_id": 1, "role": "collaborateur", "question": "Donne-moi le salaire de Paul", "intent": "paie", "status": "denied"}
-{"timestamp": "2026-06-03T00:49:42.646925", "user_id": 1, "role": "collaborateur", "question": "Comment faire une demande de congé ?", "intent": "conges", "status": "success"}
-{"timestamp": "2026-06-03T07:14:20.650304", "user_id": 1, "role": "collaborateur", "question": "uvicorn api:app --reload", "intent": "general", "status": "success"}
-{"timestamp": "2026-06-03T07:29:44.192047", "user_id": 1, "role": "collaborateur", "question": "Comment faire une demande de congé ?", "intent": "conges", "status": "success"}
-{"timestamp": "2026-06-03T07:29:45.680949", "user_id": 1, "role": "collaborateur", "question": "Comment faire une demande de congé ?", "intent": "conges", "status": "success"}
-{"timestamp": "2026-06-03T07:30:36.268254", "user_id": 1, "role": "collaborateur", "question": "Comment faire une demande de congé ?", "intent": "conges", "status": "success"}
-{"timestamp": "2026-06-03T07:31:24.182847", "user_id": 1, "role": "collaborateur", "question": "Donne-moi le salaire de Paul", "intent": "paie", "status": "denied"}
