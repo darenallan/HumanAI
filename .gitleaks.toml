@@ -1,0 +1,7 @@
+# Règles par défaut de gitleaks + une exception ciblée.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Configuration web Firebase : publique par conception (clé à restreindre par référents HTTP dans Google Cloud)."
+paths = ['''Backend/test_auth\.html''']

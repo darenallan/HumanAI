@@ -1,0 +1,33 @@
+# --- Secrets : ne jamais committer ---
+.env
+.env.*
+*.env
+!.env.example
+!**/.env.example
+constfirebase.txt
+*firebase*credentials*.json
+*firebase-adminsdk*.json
+serviceAccount*.json
+*.pem
+*.key
+
+# --- Données locales ---
+*.db
+*.sqlite
+*.sqlite3
+ia_rh/ai_logs.json
+ia_rh/ai_logs.jsonl
+*.log
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# --- Divers ---
+.DS_Store
+.idea/
+.vscode/
